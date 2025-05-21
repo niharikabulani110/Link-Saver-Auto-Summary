@@ -5,10 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import { AuthProvider, useAuth } from "./utils/auth";
 
 function ProtectedRoute({ children }) {
-  const { isAuthenticated, loading } = useAuth();
-
-  if (loading) return <div className="p-6 text-center">Checking auth...</div>;
-
+  const { isAuthenticated } = useAuth();
   return isAuthenticated ? children : <Navigate to="/" />;
 }
 

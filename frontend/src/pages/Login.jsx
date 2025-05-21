@@ -1,29 +1,22 @@
 import { useState } from "react";
-import axios from "../api/axios";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../utils/auth"; // Make sure AuthProvider is set up
-import toast from "react-hot-toast";
+import { useAuth } from "../utils/auth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { setUser } = useAuth(); // optional but helpful
+  const { login } = useAuth();
 
   const handleLogin = async () => {
     try {
-      await axios.post("/login", { email, password });
-  
-      setUser({ email }); // optional if you use context
-      toast.success("Login successful!");
-  
+      await login(email, password);
       navigate("/dashboard");
-    } catch (err) {
-      toast.error("Login failed. Please check your credentials.");
-      console.error(err);
+    } catch {
+      alert("Login failed.");
     }
   };
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-6 rounded shadow-md w-full max-w-sm">

@@ -1,19 +1,19 @@
 import { useState } from "react";
-import axios from "../api/axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../utils/auth";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { signup } = useAuth();
 
   const handleSignup = async () => {
     try {
-      await axios.post("/signup", { email, password });
-      alert("Signup successful! You can now login.");
-      navigate("/");
-    } catch (e) {
-      alert("Signup failed. Email might already be used.");
+      await signup(email, password);
+      navigate("/dashboard");
+    } catch {
+      alert("Signup failed.");
     }
   };
 
@@ -43,9 +43,9 @@ export default function Signup() {
         </button>
         <p className="text-center mt-4 text-sm text-gray-600">
           Already have an account?{" "}
-          <a href="/" className="text-blue-500 hover:underline">
-            Log in
-          </a>
+          <Link to="/" className="text-blue-500 hover:underline">
+            Login
+          </Link>
         </p>
       </div>
     </div>
