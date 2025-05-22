@@ -34,6 +34,10 @@ def get_db():
     finally:
         db.close()
 
+@app.get("/")
+def root():
+    return {"message": "Link Saver backend is running 🎉"}
+
 # 🔖 Add a bookmark
 @app.post("/bookmark")
 async def add_bookmark(
