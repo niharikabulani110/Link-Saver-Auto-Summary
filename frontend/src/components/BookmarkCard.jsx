@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import axios from '../api/axios'
+import ReactMarkdown from 'react-markdown'
 
 const BookmarkCard = ({ bookmark, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState(bookmark.title)
   const [url, setUrl] = useState(bookmark.url)
+  const [showFull, setShowFull] = useState(false)
 
   const handleUpdate = async () => {
     try {
@@ -65,10 +67,28 @@ const BookmarkCard = ({ bookmark, onDelete, onUpdate }) => {
             href={bookmark.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500 hover:underline mb-4 block"
+            className="text-blue-500 hover:underline mb-2 block"
           >
             {bookmark.url}
           </a>
+
+          <div className="text-sm text-gray-700 whitespace-pre-wrap mb-2">
+            <ReactMarkdown>
+              {showFull || bookmark.summary.length <= 300
+                ? bookmark.summary
+                : `${bookmark.summary.slice(0, 300)}...`}
+            </ReactMarkdown>
+          </div>
+
+          {bookmark.summary.length > 300 && (
+            <button
+              onClick={() => setShowFull(!showFull)}
+              className="text-blue-500 hover:underline text-sm mb-2"
+            >
+              {showFull ? 'Show less' : 'Show more'}
+            </button>
+          )}
+
           <div className="flex space-x-2">
             <button
               onClick={() => setIsEditing(true)}
@@ -89,4 +109,4 @@ const BookmarkCard = ({ bookmark, onDelete, onUpdate }) => {
   )
 }
 
-export default BookmarkCard 
+export default BookmarkCard
