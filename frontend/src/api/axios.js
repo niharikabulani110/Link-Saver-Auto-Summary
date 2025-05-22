@@ -1,13 +1,13 @@
-import axios from "axios";
+import axios from 'axios';
 
-// Use VITE_API_URL from environment variables
-const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
-});
+const baseURL = import.meta.env.DEV
+  ? '/api' // for local dev proxy
+  : import.meta.env.VITE_API_URL; // for production
 
-// Attach JWT token from localStorage if available
+const instance = axios.create({ baseURL });
+
 instance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
