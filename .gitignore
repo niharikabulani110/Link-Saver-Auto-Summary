@@ -1,22 +1,11 @@
-# Python
+# Python junk
 __pycache__/
 *.pyc
 *.pyo
-*.pyd
 
-# Virtual Environment
+# Virtual environments
+backend/venv/
 venv/
-ENV/
-env/
 
-# SQLite DB (optional for clean repos)
+# DB
 *.db
-
-# Node.js
-node_modules/
-dist/
-.cache/
-
-# OS
-.DS_Store
-Thumbs.db
