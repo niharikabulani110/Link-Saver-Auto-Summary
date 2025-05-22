@@ -1,34 +1,130 @@
-# Link Saver
+# 🔖 Link Saver
 
-A full-stack application for saving and organizing your favorite links.
+A full-stack web app to save, summarize, and manage bookmarks using AI.
 
-## Project Structure
+Users can sign up, log in, and paste any URL. The app fetches metadata, auto-generates a summary using Jina AI, and displays it in a clean interface with edit/delete functionality.
 
+---
+
+## ✨ Features
+
+### ✅ Core
+- 🔐 JWT-based Signup/Login
+- 📎 Save any URL with one click
+- 🧠 AI Summary from [Jina AI](https://r.jina.ai)
+- 🖼️ Metadata extraction: title + favicon
+- 📋 View, edit & delete bookmarks
+- 🌓 Dark mode toggle
+- ⚡ Responsive & clean UI
+
+---
+
+## ⚙️ Tech Stack
+
+### Frontend:
+- React + Vite
+- Tailwind CSS
+- Axios
+- React Router
+- React Markdown (for summaries)
+
+### Backend:
+- FastAPI
+- SQLite + SQLAlchemy
+- JWT (via python-jose)
+- Passlib (bcrypt hashing)
+- Jina AI for summaries
+- httpx for web requests
+
+---
+
+## 🚀 Getting Started
+
+### 📦 Clone the repo
+```bash
+git clone https://github.com/niharikabulani110/Link-Saver-Auto-Summary.git
+cd Link-Saver-Auto-Summary
 ```
-link-saver/
-├── backend/         # FastAPI backend
-│   ├── main.py     # Main application entry point
-│   ├── models.py   # Database models
-│   ├── database.py # Database configuration
-│   ├── auth.py     # Authentication logic
-│   ├── crud.py     # CRUD operations
+
+---
+
+### 🖥️ Backend Setup
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate     # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+- Runs on `http://localhost:8000`
+
+---
+
+### 🌐 Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+- Runs on `http://localhost:5173`
+
+---
+
+## 🔐 Auth Flow
+- Signup/Login stores JWT in localStorage
+- Axios auto-sends token with each request
+- Backend protects routes via bearer token
+
+---
+
+## 📸 Screenshots
+| Dashboard Example |
+|-------------------|
+| ![Screenshot](./screenshots/dashboard.png) |
+
+> Replace with your own screenshot from the running app.
+
+---
+
+## 🧪 Run Backend Tests
+```bash
+cd backend
+pytest tests/
+```
+
+---
+
+## 📁 Project Structure
+```
+Link-Saver-Auto-Summary/
+├── backend/
+│   ├── main.py, auth.py, crud.py, models.py, database.py
+│   ├── tests/ (pytest-based)
 │   └── requirements.txt
-├── frontend/       # React frontend
+├── frontend/
+│   ├── src/
+│   │   ├── api/, components/, pages/, utils/
+│   │   └── App.jsx, main.jsx, index.css
+│   └── vite.config.js, tailwind.config.js
 └── README.md
 ```
 
-## Setup
+---
 
-### Backend
-1. Navigate to the backend directory
-2. Create a virtual environment: `python -m venv venv`
-3. Activate the virtual environment:
-   - Windows: `venv\Scripts\activate`
-   - Unix/MacOS: `source venv/bin/activate`
-4. Install dependencies: `pip install -r requirements.txt`
-5. Run the server: `uvicorn main:app --reload`
+## 🔗 Test URLs for Summaries
+Paste these into the app:
+- https://en.wikipedia.org/wiki/OpenAI
+- https://arxiv.org/abs/2303.08774
+- https://developer.mozilla.org/en-US/docs/Web/JavaScript
 
-### Frontend
-1. Navigate to the frontend directory
-2. Install dependencies: `npm install`
-3. Start the development server: `npm start` 
+---
+
+## 📜 License
+MIT
+
+---
+
+## 🙌 Credits
+- [Jina AI](https://r.jina.ai) for summarization
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [Tailwind CSS](https://tailwindcss.com/)
