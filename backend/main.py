@@ -1,15 +1,14 @@
 from fastapi import FastAPI, Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from auth import router as auth_router
 from crud import save_bookmark, get_bookmarks, delete_bookmark
 from database import Base, engine, SessionLocal
 
-# Initialize app
 app = FastAPI()
 
-# Enable CORS
+# Enable CORS for frontend (adjust for production)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],  # frontend origin
@@ -18,16 +17,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include auth router
-app.include_router(auth_router)
-
-# Create tables
+# DB schema creation
 Base.metadata.create_all(bind=engine)
 
-# Security scheme
+# Include auth routes
+app.include_router(auth_router)
+
+# Security dependency
 bearer_scheme = HTTPBearer()
 
-# Dependency for DB session
+# DB dependency
 def get_db():
     db = SessionLocal()
     try:
@@ -35,7 +34,7 @@ def get_db():
     finally:
         db.close()
 
-# Add a bookmark
+# 🔖 Add a bookmark
 @app.post("/bookmark")
 async def add_bookmark(
     url: str,
@@ -45,7 +44,7 @@ async def add_bookmark(
     token = credentials.credentials
     return await save_bookmark(url, token, db)
 
-# Get all bookmarks
+# 📚 Get bookmarks
 @app.get("/bookmarks")
 def list_bookmarks(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
@@ -54,7 +53,7 @@ def list_bookmarks(
     token = credentials.credentials
     return get_bookmarks(token, db)
 
-# Delete a bookmark
+# ❌ Delete bookmark
 @app.delete("/bookmark/{bookmark_id}")
 def remove_bookmark(
     bookmark_id: int,

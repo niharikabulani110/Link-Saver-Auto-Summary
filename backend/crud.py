@@ -1,52 +1,64 @@
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from database import SessionLocal
-from jose import jwt, JWTError
-from models import Bookmark
+from jose import jwt, JWTError, ExpiredSignatureError
 import httpx
-from auth import SECRET_KEY, ALGORITHM
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+from models import Bookmark
+from config import SECRET_KEY, ALGORITHM
 
 def get_user_id_from_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return int(payload["sub"])
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 async def fetch_metadata(url: str):
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.get(url)
+            response = await client.get(url, timeout=5)
+            response.raise_for_status()
             title = response.text.split("<title>")[1].split("</title>")[0]
             favicon = url + "/favicon.ico"
             return title, favicon
-    except:
+    except Exception:
         return "No Title", url + "/favicon.ico"
 
 async def fetch_summary(url: str):
     try:
         async with httpx.AsyncClient() as client:
             target = httpx.utils.quote(url, safe="")
-            response = await client.get(f"https://r.jina.ai/http://{target}")
-            return response.text
-    except:
+            response = await client.get(f"https://r.jina.ai/http://{target}", timeout=5)
+            response.raise_for_status()
+            return response.text.strip()
+    except Exception:
         return "Summary temporarily unavailable."
 
 async def save_bookmark(url: str, token: str, db: Session):
     user_id = get_user_id_from_token(token)
     title, favicon = await fetch_metadata(url)
     summary = await fetch_summary(url)
-    bookmark = Bookmark(url=url, title=title, favicon=favicon, summary=summary, user_id=user_id)
+
+    bookmark = Bookmark(
+        url=url,
+        title=title,
+        favicon=favicon,
+        summary=summary,
+        user_id=user_id
+    )
     db.add(bookmark)
     db.commit()
-    return bookmark
+    db.refresh(bookmark)  # Ensure ID is loaded
+
+    return {
+        "id": bookmark.id,
+        "url": bookmark.url,
+        "title": bookmark.title,
+        "favicon": bookmark.favicon,
+        "summary": bookmark.summary,
+    }
 
 def get_bookmarks(token: str, db: Session):
     user_id = get_user_id_from_token(token)
@@ -59,3 +71,4 @@ def delete_bookmark(bookmark_id: int, token: str, db: Session):
         raise HTTPException(status_code=404, detail="Bookmark not found")
     db.delete(bookmark)
     db.commit()
+    return {"msg": "Bookmark deleted"}
